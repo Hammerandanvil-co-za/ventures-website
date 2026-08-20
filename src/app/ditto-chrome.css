@@ -1,0 +1,102 @@
+
+/* Stage 4 — interaction states (hover/focus + eased transitions) */
+[data-cid="Ln604"]:focus{background-color:rgb(221, 221, 221);border-bottom-color:rgb(68, 68, 68);border-left-color:rgb(68, 68, 68);border-right-color:rgb(68, 68, 68);border-top-color:rgb(68, 68, 68);color:rgb(68, 68, 68);outline-color:rgb(68, 68, 68);text-decoration-color:rgb(68, 68, 68)}
+
+/*
+ * Motion restored from the live site (see src/app/ditto/motion.tsx).
+ * The ditto.site capture preserves DOM/CSS fidelity but intentionally
+ * drops JS-driven animation (AGENTS.md / ARCHITECTURE.md). The live site
+ * (Salient WP theme + WPBakery) drives this with Waypoints.js + anime.js
+ * scroll reveals and an off-canvas mobile menu; this recreates both with
+ * plain CSS + an IntersectionObserver, matching the observed timing.
+ */
+
+/* animate.css `fadeInUp`, the one animation-name the capture preserved
+   in place (src/app/page.tsx, data-cid n68) but whose keyframes never
+   shipped, since they live in a third-party stylesheet that wasn't captured. */
+@keyframes fadeInUp{0%{opacity:0;transform:translate3d(0,100%,0)}to{opacity:1;transform:translateZ(0)}}
+
+/* Generic scroll-reveal vocabulary, applied via data-ditto-animate.
+   Directions/durations match what was observed live (fade-in-from-right,
+   fade-in-from-bottom, grow-in) rather than animate.css's full-size offsets. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-ditto-animate] { opacity: 0; }
+  [data-ditto-animate="fade-up"] { transform: translate3d(0, 2.5rem, 0); }
+  [data-ditto-animate="fade-right"] { transform: translate3d(-2.5rem, 0, 0); }
+  [data-ditto-animate="fade-left"] { transform: translate3d(2.5rem, 0, 0); }
+  [data-ditto-animate="grow-in"] { transform: scale(0.92); }
+  [data-ditto-animate].ditto-in-view {
+    opacity: 1;
+    transform: none;
+    transition: opacity 0.7s cubic-bezier(0.215, 0.61, 0.355, 1), transform 0.7s cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+}
+
+/* Off-canvas mobile menu (mirrors #slide-out-widget-area on the live site). */
+#slide-out-widget-area {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 10001;
+  width: min(22.5rem, 85vw);
+  transform: translate3d(100%, 0, 0);
+  transition: transform 0.3s ease-out;
+  background: var(--color-background, #fff);
+  overflow-y: auto;
+  visibility: hidden;
+}
+html.ditto-menu-open #slide-out-widget-area {
+  transform: translate3d(0, 0, 0);
+  visibility: visible;
+}
+#slide-out-widget-area .off-canvas-menu-container {
+  list-style: none;
+  padding: 5.5rem 2rem 2rem;
+  margin: 0;
+}
+#slide-out-widget-area .off-canvas-menu-container li + li {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+#slide-out-widget-area .off-canvas-menu-container a {
+  display: block;
+  padding: 0.9rem 0;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+#slide-out-widget-area .off-canvas-menu-container a:hover,
+#slide-out-widget-area .off-canvas-menu-container a:focus {
+  opacity: 1;
+}
+
+/* The fixed close ("X") button — hidden until the menu opens, then
+   morphs from a flat bar into the crossed shape via CSS transition
+   (bidirectional, unlike the capture's dead animation-name reference). */
+a[data-cid="Ln603"] {
+  top: 1.25rem !important;
+  left: auto !important;
+  right: 1.25rem !important;
+  width: 2.75rem !important;
+  height: 2.75rem !important;
+  opacity: 0 !important;
+  z-index: 10002;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+html.ditto-menu-open a[data-cid="Ln603"] {
+  opacity: 1 !important;
+  visibility: visible;
+  pointer-events: auto;
+}
+[data-cid="Ln606"], [data-cid="Ln607"] {
+  animation: none !important;
+  top: 1.375rem !important;
+  left: 1.375rem !important;
+  transform: matrix(1, 0, 0, 1, 0, 0) !important;
+  transition: transform 0.4s cubic-bezier(0.52, 0.01, 0.16, 1);
+}
+html.ditto-menu-open [data-cid="Ln606"] {
+  transform: matrix(0.707107, -0.707107, 0.707107, 0.707107, 0, 0) !important;
+}
+html.ditto-menu-open [data-cid="Ln607"] {
+  transform: matrix(0.707107, 0.707107, -0.707107, 0.707107, 0, 0) !important;
+}
